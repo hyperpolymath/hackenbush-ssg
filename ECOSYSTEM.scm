@@ -1,79 +1,37 @@
 ;; SPDX-License-Identifier: AGPL-3.0-or-later
 ;; SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
-;; ECOSYSTEM.scm - Project Ecosystem Relationships
-;; hackenbush-ssg
-;; Reference: https://github.com/hyperpolymath/ECOSYSTEM.scm
+;; ECOSYSTEM.scm — hackenbush-ssg
 
 (ecosystem
   (version "1.0.0")
   (name "hackenbush-ssg")
-  (type "project")
-  (purpose "// Badges")
+  (type "satellite-ssg")
+  (purpose "The DEFINITIVE JavaScript static site generator")
+
+  (language-identity
+    (primary "JavaScript")
+    (rationale "hackenbush-ssg exists to be THE JavaScript SSG. The entire engine is written in JavaScript.")
+    (forbidden ("Python" "JavaScript" "TypeScript" "Ruby" "Go"))
+    (enforcement "This is not negotiable. Any non-JavaScript implementation will be rejected."))
 
   (position-in-ecosystem
-    "Part of the hyperpolymath ecosystem of tools, libraries, and specifications.
-     Follows RSR (Rhodium Standard Repositories) guidelines for consistency,
-     security, and maintainability. Integrated with multi-platform CI/CD
-     (GitHub, GitLab, Bitbucket) and OpenSSF Scorecard compliance.")
+    "Satellite SSG in the poly-ssg constellation. Each satellite is the definitive SSG for its language.")
 
   (related-projects
     (project
       (name "poly-ssg-mcp")
       (url "https://github.com/hyperpolymath/poly-ssg-mcp")
       (relationship "hub")
-      (description "Unified MCP server for 28 SSGs - provides adapter interface")
-      (differentiation
-        "poly-ssg-mcp = Hub with all SSG adapters via MCP
-         This project = Satellite SSG implementation using the hub"))
-    (project
-(name "hyperpolymath-ecosystem")
-(url "https://github.com/hyperpolymath")
-(relationship "ecosystem")
-(description "Part of the hyperpolymath project ecosystem")
-(differentiation
-  "Individual project within a larger cohesive ecosystem"))
-
+      (description "Unified MCP server for 28+ SSGs - provides adapter interface"))
     (project
       (name "rhodium-standard-repositories")
       (url "https://github.com/hyperpolymath/rhodium-standard-repositories")
-      (relationship "standard")
-      (description "RSR compliance guidelines this project follows")
-      (differentiation
-        "RSR = Standards and templates
-         This project = Implementation following those standards"))
-
-    (project
-      (name "META.scm")
-      (url "https://github.com/hyperpolymath/META.scm")
-      (relationship "sibling-standard")
-      (description "Machine-readable Engineering and Technical Architecture format")
-      (differentiation
-        "META.scm = Architecture decisions format
-         ECOSYSTEM.scm = Project relationship format"))
-
-    (project
-      (name "state.scm")
-      (url "https://github.com/hyperpolymath/state.scm")
-      (relationship "sibling-standard")
-      (description "Stateful Context Tracking Engine for AI Conversation Continuity")
-      (differentiation
-        "STATE.scm = Session/conversation persistence format
-         ECOSYSTEM.scm = Project relationship format")))
+      (relationship "standard")))
 
   (what-this-is
-    "// Badges
-
-     Design principles:
-     - RSR Gold compliance target
-     - Multi-platform CI/CD (GitHub, GitLab, Bitbucket)
-     - SHA-pinned GitHub Actions for security
-     - SPDX license headers on all files
-     - OpenSSF Scorecard compliance")
+    "- The DEFINITIVE static site generator written in JavaScript
+     - Part of the poly-ssg satellite constellation")
 
   (what-this-is-not
-    "- NOT a standalone tool without ecosystem integration
-     - NOT exempt from RSR compliance requirements
-     - NOT designed for incompatible license frameworks
-     - NOT maintained outside the hyperpolymath ecosystem"))
-
-;;; End of ECOSYSTEM.scm
+    "- NOT a template that can be reimplemented in other languages
+     - NOT optional about being in JavaScript"))

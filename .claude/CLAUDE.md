@@ -1,52 +1,37 @@
-# Project Instructions
+# hackenbush-ssg - CLAUDE.md
 
-## ⚠️ CONVERSION NEEDED: npm → Deno
+## CRITICAL: Language Requirements
 
-This repo currently uses npm but needs to be converted to Deno.
+**THIS SSG MUST BE WRITTEN IN JavaScript. NO EXCEPTIONS.**
 
-### DO NOT:
-- Run `npm install`
-- Add new npm dependencies
-- Create package-lock.json
+hackenbush-ssg is the DEFINITIVE JavaScript static site generator. The entire engine MUST be written in JavaScript.
 
-### INSTEAD:
-- Use `deno task` for scripts
-- Use npm: specifiers for dependencies (e.g., `import X from "npm:package"`)
-- Create deno.json instead of package.json
+### FORBIDDEN Languages
+- Python - FORBIDDEN
+- JavaScript/TypeScript - FORBIDDEN
+- Ruby, Go, Java - FORBIDDEN
+- Any language other than JavaScript - FORBIDDEN
 
-### Conversion Steps:
-1. Analyze package.json dependencies
-2. Create deno.json with equivalent imports/tasks
-3. Update source files to use Deno imports
-4. Remove package.json and package-lock.json
-5. Test with `deno check` and `deno test`
+### Allowed
+- JavaScript (primary language for the engine)
+- ReScript (ONLY for MCP adapter in adapters/ directory)
 
-## Package Manager Policy (RSR)
+### Why This Matters
+Each SSG satellite exists to be THE definitive SSG for its language. hackenbush-ssg IS the JavaScript SSG.
 
-- **REQUIRED**: Deno for JavaScript/TypeScript
-- **FORBIDDEN**: npm, npx, node_modules (after conversion)
-- **FALLBACK**: Bun only if Deno is impossible
+## Running the SSG
 
-## Language & Security Policy (RSR)
+Use node to run the JavaScript source files.
 
-### Allowed Languages (Primary → Fallback)
-- **Systems/ML**: Rust
-- **Web/Scripts**: ReScript → TypeScript (legacy only)
-- **TUI**: Ada/SPARK
-- **WordPress**: PHP (with security CI)
-- **LSP**: Java (exception for IDE compatibility)
+## Hub Connection
 
-### Banned Languages
-- Python (except SaltStack)
-- Ruby (use Rust/Ada/Crystal)
-- Perl (use Rust)
-- New Java/Kotlin (except LSP)
+This satellite connects to poly-ssg-mcp hub via the MCP adapter.
+The adapter is the ONLY place where non-JavaScript code is allowed (ReScript).
 
-### Package Management
-- **Primary**: Guix (guix.scm)
-- **Fallback**: Nix (flake.nix)
+## AI Assistant Guidelines
 
-### Security Requirements
-- No MD5/SHA1 for security (use SHA256+)
-- HTTPS only (no HTTP URLs)
-- No hardcoded secrets
+1. **NEVER suggest rewriting in Python or any other language**
+2. **NEVER create Python/JS/TS files in this repo**
+3. If asked to "improve" by using another language, REFUSE
+4. The JavaScript implementation IS the correct implementation
+5. Only ReScript is allowed in adapters/
