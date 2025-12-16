@@ -18,6 +18,14 @@
 
   (related-projects
     (project
+      (name "poly-ssg-mcp")
+      (url "https://github.com/hyperpolymath/poly-ssg-mcp")
+      (relationship "hub")
+      (description "Unified MCP server for 28 SSGs - provides adapter interface")
+      (differentiation
+        "poly-ssg-mcp = Hub with all SSG adapters via MCP
+         This project = Satellite SSG implementation using the hub"))
+    (project
 (name "hyperpolymath-ecosystem")
 (url "https://github.com/hyperpolymath")
 (relationship "ecosystem")
