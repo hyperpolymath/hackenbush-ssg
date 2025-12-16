@@ -2,41 +2,71 @@
 :toc: auto
 :toclevels: 3
 
-**The Conway's Game of Life static site generator.**
+**EXPERIMENTAL: The Conway's Game of Life static site generator.**
+
+[WARNING]
+====
+This is an experimental project demonstrating Game of Life as a programming language.
+hackenbush-ssg proves that an SSG can theoretically be written in pure Life patterns.
+====
 
 == Overview
 
-hackenbush-ssg is an experimental static site generator that uses
-Conway's Game of Life (a Turing-complete cellular automaton) to
-generate content patterns and site structure.
+hackenbush-ssg is an extreme experiment: a static site generator where the
+"source code" is a Conway's Game of Life pattern. The pattern encodes the SSG
+logic, and running the simulation produces HTML output.
 
 == Language Enforcement
 
 [IMPORTANT]
 ====
-This SSG uses JavaScript to implement the Game of Life cellular automaton.
-The SSG logic is the Life simulation itself.
+This SSG **MUST** use Game of Life patterns as the program.
 
-The **ONLY** non-JS code allowed is the ReScript MCP adapter in `adapters/`.
+**ABSOLUTELY FORBIDDEN** for SSG logic:
+
+* JavaScript/TypeScript
+* Python
+* Any conventional programming language
+
+The host runtime (`runtime/host.ts`) provides **ONLY**:
+
+* Load and parse RLE pattern files
+* Run the Life simulation
+* Read output cells at designated locations
+* Write the resulting HTML to files
+
+ALL SSG logic is in the Life pattern. The host is a dumb simulator.
 ====
 
-== Features
+== How It Works
 
-* Turing-complete content generation via cellular automata
-* Pattern-based page layouts (gliders, oscillators, etc.)
-* Generative art integration
-* Interactive life simulations embedded in pages
-* Educational demonstration of computational universality
+1. **Pattern as Program**: The `.rle` file in `src/` IS the SSG
+2. **Input Encoding**: Content is encoded as initial cell configurations
+3. **Computation**: The Life simulation runs for N generations
+4. **Output Decoding**: Specific cell regions are read as ASCII bytes
+5. **HTML Generation**: The cell states decode into HTML
+
+== Why This Is Extreme
+
+* Life patterns for useful computations are ENORMOUS
+* A simple adder might need billions of cells
+* A full SSG pattern would be astronomically complex
+* This is more proof-of-concept than practical
 
 == Requirements
 
-* Node.js 18+ or Deno
+* Deno (for the host runtime)
+* The Life pattern in `src/hackenbush.rle`
 
 == Building
 
 [source,bash]
 ----
-node src/main.js build
+# Run the Life simulation and generate output
+deno run --allow-read --allow-write runtime/host.ts
+
+# With custom parameters
+deno run --allow-read --allow-write runtime/host.ts src/hackenbush.rle 10000 _site/index.html
 ----
 
 == Project Structure
@@ -44,16 +74,27 @@ node src/main.js build
 [source]
 ----
 hackenbush-ssg/
-├── src/                  # JavaScript + Life patterns (THE SSG)
-│   ├── main.js          # Entry point
-│   ├── life.js          # Game of Life engine
-│   └── encoder.js       # Pattern encoder
-├── adapters/             # ReScript MCP adapter only
-├── STATE.scm             # Project state
-├── ECOSYSTEM.scm         # Ecosystem position
-├── META.scm              # Architecture decisions
-└── .claude/CLAUDE.md     # AI guidelines
+├── src/
+│   └── hackenbush.rle    # THE SSG - Life pattern file
+├── patterns/              # Reusable pattern components
+│   ├── glider-gun.rle    # Signal generators
+│   └── logic-gates.rle   # AND, OR, NOT gates
+├── runtime/
+│   └── host.ts           # ONLY simulation + I/O (no SSG logic!)
+├── adapters/              # ReScript MCP adapter only
+├── STATE.scm              # Project state
+├── ECOSYSTEM.scm          # Ecosystem position
+├── META.scm               # Architecture decisions
+└── .claude/CLAUDE.md      # AI guidelines
 ----
+
+== Why Game of Life?
+
+Conway's Game of Life is Turing-complete, meaning ANY computation can be
+performed by a sufficiently complex pattern. hackenbush-ssg proves this
+by implementing an SSG entirely in Life patterns.
+
+Named after Hackenbush, another combinatorial game studied by John Conway.
 
 == Part of poly-ssg
 
