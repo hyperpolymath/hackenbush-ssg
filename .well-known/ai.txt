@@ -1,4 +1,4 @@
-# AI Usage Policy for RSR-template-repo
+# AI Usage Policy for hackenbush-ssg
 # https://github.com/hyperpolymath/consent-aware-http
 
 # This project follows Consent-Aware HTTP principles
@@ -17,7 +17,7 @@ Embedding-Generation: Explicit-Consent-Required
 
 # Attribution Requirements
 Attribution: Required
-Citation-Style: hyperpolymath/RSR-template-repo
+Citation-Style: hyperpolymath/hackenbush-ssg
 License: AGPL-3.0-or-later OR MIT AND Palimpsest-0.4
 
 # Contact for AI/ML Use
@@ -33,4 +33,4 @@ Allowed-Uses:
 
 # Provenance
 Provenance-Record: /.well-known/provenance.json
-Verification: https://hyperpolymath.org/verify/RSR-template-repo
+Verification: https://hyperpolymath.org/verify/hackenbush-ssg
