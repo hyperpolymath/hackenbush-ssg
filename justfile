@@ -1,4 +1,4 @@
-# RSR-template-repo - RSR Standard Justfile Template
+# hackenbush-ssg - RSR Standard Justfile
 # https://just.systems/man/en/
 #
 # This is the CANONICAL template for all RSR projects.
@@ -13,7 +13,7 @@ set dotenv-load := true
 set positional-arguments := true
 
 # Project metadata - CUSTOMIZE THESE
-project := "RSR-template-repo"
+project := "hackenbush-ssg"
 version := "0.1.0"
 tier := "infrastructure"  # 1 | 2 | infrastructure
 
@@ -218,7 +218,7 @@ man:
     #!/usr/bin/env bash
     mkdir -p docs/man
     cat > docs/man/{{project}}.1 << EOF
-.TH RSR-TEMPLATE-REPO 1 "$(date +%Y-%m-%d)" "{{version}}" "RSR Template Manual"
+.TH HACKENBUSH-SSG 1 "$(date +%Y-%m-%d)" "{{version}}" "hackenbush-ssg Manual"
 .SH NAME
 {{project}} \- RSR standard repository template
 .SH SYNOPSIS

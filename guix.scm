@@ -1,4 +1,4 @@
-;; RSR-template-repo - Guix Package Definition
+;; hackenbush-ssg - Guix Package Definition
 ;; Run: guix shell -D -f guix.scm
 
 (use-modules (guix packages)
@@ -8,18 +8,18 @@
              ((guix licenses) #:prefix license:)
              (gnu packages base))
 
-(define-public rsr_template_repo
+(define-public hackenbush-ssg
   (package
-    (name "RSR-template-repo")
+    (name "hackenbush-ssg")
     (version "0.1.0")
-    (source (local-file "." "RSR-template-repo-checkout"
+    (source (local-file "." "hackenbush-ssg-checkout"
                         #:recursive? #t
                         #:select? (git-predicate ".")))
     (build-system gnu-build-system)
-    (synopsis "Guix channel/infrastructure")
-    (description "Guix channel/infrastructure - part of the RSR ecosystem.")
-    (home-page "https://github.com/hyperpolymath/RSR-template-repo")
+    (synopsis "Game of Life Static Site Generator")
+    (description "Static site generator implemented in Conway's Game of Life patterns - proving Turing-completeness through cellular automata. Part of the poly-ssg satellite constellation.")
+    (home-page "https://github.com/hyperpolymath/hackenbush-ssg")
     (license license:agpl3+)))
 
 ;; Return package for guix shell
-rsr_template_repo
+hackenbush-ssg

@@ -3,19 +3,20 @@
 ;; ECOSYSTEM.scm — hackenbush-ssg
 
 (ecosystem
-  (version "1.0.0")
+  (version "0.1.0")
   (name "hackenbush-ssg")
   (type "satellite-ssg")
-  (purpose "The DEFINITIVE JavaScript static site generator")
+  (purpose "The DEFINITIVE Conway's Game of Life static site generator")
 
   (language-identity
-    (primary "JavaScript")
-    (rationale "hackenbush-ssg exists to be THE JavaScript SSG. The entire engine is written in JavaScript.")
+    (primary "Conway's Game of Life")
+    (rationale "hackenbush-ssg exists to PROVE that SSG logic can be encoded in Game of Life patterns. Conway's Game of Life is Turing-complete, meaning any computation can theoretically be performed by a Life pattern.")
     (forbidden ("Python" "JavaScript" "TypeScript" "Ruby" "Go"))
-    (enforcement "This is not negotiable. Any non-JavaScript implementation will be rejected."))
+    (allowed-for-host ("TypeScript/Deno" "ReScript"))
+    (enforcement "The Life pattern IS the program. The host runtime provides ONLY simulation and I/O."))
 
   (position-in-ecosystem
-    "Satellite SSG in the poly-ssg constellation. Each satellite is the definitive SSG for its language.")
+    "Satellite SSG in the poly-ssg constellation. Each satellite is the definitive SSG for its language. hackenbush-ssg proves cellular automata can be a programming paradigm.")
 
   (related-projects
     (project
@@ -29,9 +30,13 @@
       (relationship "standard")))
 
   (what-this-is
-    "- The DEFINITIVE static site generator written in JavaScript
-     - Part of the poly-ssg satellite constellation")
+    "- The DEFINITIVE static site generator using Conway's Game of Life patterns
+     - Proof that Turing-complete cellular automata can encode SSG logic
+     - Part of the poly-ssg satellite constellation
+     - An extreme experimental project")
 
   (what-this-is-not
-    "- NOT a template that can be reimplemented in other languages
-     - NOT optional about being in JavaScript"))
+    "- NOT a JavaScript/Python SSG with Life visualization
+     - NOT a template that can be reimplemented in conventional languages
+     - NOT practical for production use (yet)
+     - The host runtime is NOT the SSG - the Life patterns ARE"))

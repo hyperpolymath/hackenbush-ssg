@@ -1,13 +1,13 @@
 {
   "$schema": "https://hyperpolymath.org/schemas/provenance-v1.json",
-  "project": "RSR-template-repo",
-  "version": "{{VERSION}}",
-  "canonical": "https://github.com/hyperpolymath/RSR-template-repo",
+  "project": "hackenbush-ssg",
+  "version": "0.1.0",
+  "canonical": "https://github.com/hyperpolymath/hackenbush-ssg",
   "singleSourceOfTruth": "github",
   "mirrors": [
     {
       "platform": "gitlab",
-      "url": "https://gitlab.com/hyperpolymath/RSR-template-repo",
+      "url": "https://gitlab.com/hyperpolymath/hackenbush-ssg",
       "type": "mirror",
       "sync": "automated"
     }
@@ -36,8 +36,8 @@
     "attestation": "sigstore"
   },
   "metadata": {
-    "created": "{{CREATED_DATE}}",
-    "updated": "{{UPDATED_DATE}}",
+    "created": "2025-12-10",
+    "updated": "2025-12-17",
     "generator": "conative-gating"
   }
 }

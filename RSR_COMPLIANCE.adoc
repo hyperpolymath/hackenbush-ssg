@@ -1,10 +1,10 @@
-= RSR Compliance: RSR-template-repo
+= RSR Compliance: hackenbush-ssg
 :toc:
 :sectnums:
 
 == Overview
 
-This document describes the Rhodium Standard Repository (RSR) compliance status for *RSR-template-repo*.
+This document describes the Rhodium Standard Repository (RSR) compliance status for *hackenbush-ssg*.
 
 == Classification
 
@@ -12,11 +12,13 @@ This document describes the Rhodium Standard Repository (RSR) compliance status 
 |===
 |Attribute |Value
 
-|Project |RSR-template-repo
-|Primary Language |unknown
-|RSR Tier |N/A
-|Compliance Status |Review Needed
-|Last Updated |2025-12-10
+|Project |hackenbush-ssg
+|Primary Language |Conway's Game of Life
+|Host Runtime |Deno/TypeScript (simulation only)
+|MCP Adapter |ReScript
+|RSR Tier |Experimental
+|Compliance Status |Compliant
+|Last Updated |2025-12-17
 |===
 
 == Language Tier Classification
@@ -35,9 +37,13 @@ This document describes the Rhodium Standard Repository (RSR) compliance status 
 * Guile Scheme (state management)
 * Nix (derivations)
 
+=== Special Cases
+* Conway's Game of Life - Primary language for hackenbush-ssg SSG logic
+* TypeScript/Deno - Allowed ONLY in runtime/ for host simulator (no SSG logic)
+
 === Restricted Languages
 * Python - Only allowed in salt/ directories for SaltStack
-* TypeScript/JavaScript - Legacy only, convert to ReScript
+* JavaScript - Not allowed for SSG logic
 * CUE - Not permitted, use Nickel or Guile
 
 == Compliance Checklist
@@ -46,28 +52,26 @@ This document describes the Rhodium Standard Repository (RSR) compliance status 
 |===
 |Requirement |Status |Notes
 
-|Primary language is Tier 1/2 |✓ |unknown
-|No restricted languages outside exemptions |✓ |
+|Primary language is Tier 1/2 or Special |✓ |Conway's Game of Life (Turing-complete)
+|No restricted languages outside exemptions |✓ |TypeScript in runtime/ only
 |.editorconfig present |✓ |
 |.well-known/ directory |✓ |
-|justfile present |✗ |
+|justfile present |✓ |
 |LICENSE.txt (AGPL + Palimpsest) |✓ |
-|Containerfile present |✗ |
-|flake.nix present |✗ |
+|Containerfile present |✗ |Not yet required
+|flake.nix present |✗ |Using guix.scm instead
 |===
 
 == Exemptions
 
-None
+* TypeScript permitted in `runtime/` directory for host simulation
 
 == Action Items
 
-* Add justfile
-* Add Containerfile
-* Add flake.nix
+* Add Containerfile for container builds
+* Expand Life pattern library
 
 == References
 
-* link:https://github.com/hyperpolymath/RSR-template-repo[RSR Template Repository]
-* link:../CONTRIBUTING.adoc[Contributing Guidelines]
-* link:../CODE_OF_CONDUCT.adoc[Code of Conduct]
+* link:https://github.com/hyperpolymath/hackenbush-ssg[hackenbush-ssg Repository]
+* link:CONTRIBUTING.adoc[Contributing Guidelines]
