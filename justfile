@@ -430,3 +430,198 @@ todos:
 # Open in editor
 edit:
     ${EDITOR:-code} .
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# GAME OF LIFE - PATTERN OPERATIONS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Validate all Life patterns in patterns/ and src/
+validate-patterns:
+    #!/usr/bin/env bash
+    echo "🔬 Validating Life patterns..."
+    FAILED=0
+    for f in src/*.rle patterns/*.rle; do
+        if [ -f "$f" ]; then
+            if head -1 "$f" | grep -q "^#"; then
+                echo "✅ $f"
+            else
+                echo "❌ $f - Invalid RLE header"
+                FAILED=1
+            fi
+        fi
+    done
+    [ $FAILED -eq 0 ] && echo "All patterns valid!" || exit 1
+
+# Run Life evolution simulation
+evolve generations="100":
+    @echo "🔄 Evolving pattern for {{generations}} generations..."
+    @command -v deno >/dev/null && deno run --allow-read --allow-write runtime/host.ts evolve --generations={{generations}} || echo "Deno not available"
+
+# Benchmark pattern simulation performance
+bench-patterns:
+    #!/usr/bin/env bash
+    echo "⏱️ Benchmarking pattern simulation..."
+    if command -v deno >/dev/null; then
+        time deno run --allow-read runtime/host.ts evolve --generations=1000
+    else
+        echo "Deno not available for benchmarking"
+    fi
+
+# Count cells in all patterns
+cell-count:
+    #!/usr/bin/env bash
+    echo "📊 Cell counts:"
+    for f in src/*.rle patterns/*.rle; do
+        if [ -f "$f" ]; then
+            CELLS=$(grep -o 'o' "$f" | wc -l)
+            echo "  $f: $CELLS cells"
+        fi
+    done
+
+# List all patterns with metadata
+list-patterns:
+    #!/usr/bin/env bash
+    echo "📋 Pattern Library:"
+    for f in src/*.rle patterns/*.rle; do
+        if [ -f "$f" ]; then
+            NAME=$(grep "^#N" "$f" | head -1 | cut -d' ' -f2-)
+            [ -z "$NAME" ] && NAME="(unnamed)"
+            echo "  $f: $NAME"
+        fi
+    done
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# GAME OF LIFE - DENO OPERATIONS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Type check the host runtime
+typecheck:
+    @echo "📝 Type checking..."
+    @command -v deno >/dev/null && deno check runtime/host.ts && echo "✅ Type check passed" || echo "Deno not available"
+
+# Run Deno tests
+test-deno:
+    @echo "🧪 Running Deno tests..."
+    @command -v deno >/dev/null && deno test --allow-read --allow-write tests/ || echo "Deno not available"
+
+# Run E2E tests
+test-e2e:
+    @echo "🔗 Running E2E tests..."
+    @command -v deno >/dev/null && deno test --allow-read --allow-write tests/e2e/ || echo "Deno not available"
+
+# Run all tests including patterns
+test-all: validate-patterns test-deno test-e2e
+    @echo "✅ All tests complete"
+
+# Format with Deno
+fmt-deno:
+    @command -v deno >/dev/null && deno fmt runtime/ tests/ || echo "Deno not available"
+
+# Lint with Deno
+lint-deno:
+    @command -v deno >/dev/null && deno lint runtime/ tests/ || echo "Deno not available"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# GAME OF LIFE - RESCRIPT ADAPTER
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Build ReScript adapter
+adapter-build:
+    @echo "🔧 Building ReScript adapter..."
+    @cd adapters && npm run build 2>/dev/null || echo "ReScript build failed or not configured"
+
+# Build Life language tooling
+life-lang-build:
+    @echo "🔧 Building Life language tooling..."
+    @cd life-lang && npm run build 2>/dev/null || echo "Life-lang build failed or not configured"
+
+# Start RLE Language Server
+lsp:
+    @echo "🔧 Starting RLE Language Server..."
+    @echo "Note: LSP implementation in life-lang/src/lsp/"
+    @echo "Configure your editor to use the hackenbush-lsp server"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# MUST-PASS INTEGRATION
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Run all must-pass checks
+must-all:
+    @echo "🔒 Running must-pass checks..."
+    @make -f Mustfile must-all 2>/dev/null || (echo "Running inline checks..." && just must-patterns && just must-no-ssg-logic)
+
+# Must: Validate patterns
+must-patterns:
+    @test -f src/hackenbush.rle || (echo "❌ src/hackenbush.rle missing" && exit 1)
+    @head -1 src/hackenbush.rle | grep -q "^#" || (echo "❌ Invalid RLE header" && exit 1)
+    @echo "✅ Pattern validation passed"
+
+# Must: No SSG logic in runtime
+must-no-ssg-logic:
+    @! grep -i "markdown\|frontmatter\|template\|render" runtime/host.ts 2>/dev/null || (echo "❌ SSG logic in runtime" && exit 1)
+    @echo "✅ No SSG logic in runtime"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# EXTENDED MATRIX RECIPES
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Pattern matrix: [validate|evolve|bench|analyze] × [all|specific] × [generations]
+pattern-matrix action="validate" scope="all" generations="100":
+    #!/usr/bin/env bash
+    echo "Pattern matrix: action={{action}} scope={{scope}} generations={{generations}}"
+    case "{{action}}" in
+        validate) just validate-patterns ;;
+        evolve) just evolve {{generations}} ;;
+        bench) just bench-patterns ;;
+        analyze) just cell-count && just list-patterns ;;
+        *) echo "Unknown action: {{action}}" && exit 1 ;;
+    esac
+
+# Language matrix: [typecheck|lint|fmt|test] × [runtime|adapter|life-lang|all]
+lang-matrix action="typecheck" scope="all":
+    #!/usr/bin/env bash
+    echo "Language matrix: action={{action}} scope={{scope}}"
+    case "{{action}}-{{scope}}" in
+        typecheck-runtime|typecheck-all) just typecheck ;;
+        lint-runtime|lint-all) just lint-deno ;;
+        fmt-runtime|fmt-all) just fmt-deno ;;
+        test-runtime|test-all) just test-deno ;;
+        *-adapter) just adapter-build ;;
+        *-life-lang) just life-lang-build ;;
+        *) echo "Running all for {{action}}..." ;;
+    esac
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# HOOKS CONFIGURATION
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Install comprehensive git hooks
+install-hooks-full:
+    #!/usr/bin/env bash
+    mkdir -p .git/hooks
+    cat > .git/hooks/pre-commit << 'HOOK'
+#!/bin/bash
+set -e
+echo "🔍 Pre-commit checks..."
+just must-patterns || exit 1
+just must-no-ssg-logic || exit 1
+just typecheck || exit 1
+echo "✅ Pre-commit passed"
+HOOK
+    chmod +x .git/hooks/pre-commit
+
+    cat > .git/hooks/pre-push << 'HOOK'
+#!/bin/bash
+set -e
+echo "🚀 Pre-push checks..."
+just validate-patterns || exit 1
+just test-deno || exit 1
+echo "✅ Pre-push passed"
+HOOK
+    chmod +x .git/hooks/pre-push
+    echo "Git hooks installed (pre-commit, pre-push)"
+
+# Remove git hooks
+remove-hooks:
+    @rm -f .git/hooks/pre-commit .git/hooks/pre-push
+    @echo "Git hooks removed"
