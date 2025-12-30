@@ -10,15 +10,23 @@
     (enforcement-level . "absolute")
     (rationale . "Each SSG satellite is the DEFINITIVE implementation for its language. hackenbush-ssg IS the Game of Life SSG - proving Turing-completeness of cellular automata.")
     (violations
-     ("Python implementation" . "FORBIDDEN")
+     ("TypeScript" . "FORBIDDEN - use ReScript instead (Hyperpolymath Language Policy)")
+     ("Python implementation" . "FORBIDDEN - unless SaltStack")
+     ("Go implementation" . "FORBIDDEN - use Rust instead")
+     ("Node.js/npm" . "FORBIDDEN - use Deno instead")
      ("JavaScript/TypeScript SSG logic" . "FORBIDDEN")
      ("Any conventional language for SSG logic" . "FORBIDDEN - defeats the purpose of this satellite"))
     (allowed-exceptions
-     ("TypeScript in runtime/" . "ALLOWED - host simulation and I/O only")
-     ("ReScript in adapters/" . "ALLOWED - MCP hub integration only"))
+     ("ReScript in runtime/" . "ALLOWED - host simulation and I/O (compiles to JS)")
+     ("ReScript in adapters/" . "ALLOWED - MCP hub integration only")
+     ("JavaScript (Deno glue)" . "ALLOWED ONLY where ReScript bindings cannot work"))
+    (policy-enforcement
+     (ci-workflow . ".github/workflows/language-policy.yml")
+     (check-script . "scripts/check-language-policy.js")
+     (pre-commit . "hooks/pre-commit (check banned extensions)"))
     (correct-implementation
      (core-logic . "RLE pattern files in src/")
-     (simulator . "Deno/TypeScript host in runtime/")
+     (simulator . "ReScript host in runtime/ (compiled to JS for Deno)")
      (mcp-adapter . "ReScript in adapters/"))))
 
 (define architecture-decisions
@@ -34,8 +42,15 @@
      (status . "accepted")
      (date . "2025-12-17")
      (context . "Host must not contain SSG logic - only simulation + I/O")
-     (decision . "TypeScript/Deno host provides RLE parsing, simulation, and output only")
-     (consequences . ("Clean separation" "Life patterns ARE the program" "Testable simulator")))
+     (decision . "ReScript host provides RLE parsing, simulation, and output only (runs via Deno)")
+     (consequences . ("Clean separation" "Life patterns ARE the program" "Testable simulator" "Type-safe runtime")))
+    (adr-004
+     (title . "TypeScript to ReScript Migration")
+     (status . "accepted")
+     (date . "2025-12-30")
+     (context . "Hyperpolymath Language Policy bans TypeScript in favor of ReScript")
+     (decision . "Migrate runtime/host.ts to runtime/Host.res with Deno bindings")
+     (consequences . ("Policy compliance" "Type-safe with OCaml-like inference" "Compiles to clean ES6 JS")))
     (adr-003
      (title . "RSR Compliance")
      (status . "accepted")
@@ -45,10 +60,14 @@
      (consequences . ("RSR Gold target" "SHA-pinned actions" "SPDX headers")))))
 
 (define development-practices
-  '((code-style (languages . ("RLE patterns" "TypeScript (host)" "ReScript (adapter)")))
+  '((code-style (languages . ("RLE patterns" "ReScript (host)" "ReScript (adapter)")))
     (security (sast . "CodeQL for workflow scanning") (credentials . "env vars only") (patterns . "RLE files are data - minimal attack surface"))
     (versioning (scheme . "SemVer 2.0.0"))
-    (testing (pattern-validation . "CI validates .rle structure") (simulator-tests . "Deno test suite"))))
+    (testing (pattern-validation . "CI validates .rle structure") (simulator-tests . "Deno test suite"))
+    (policy-enforcement
+     (banned . ("TypeScript" "Go" "Python (non-SaltStack)" "Node.js/npm"))
+     (required . ("ReScript for app code" "Deno for JS runtime" "Rust for systems"))
+     (ci-check . "language-policy.yml"))))
 
 (define design-rationale
   '((why-game-of-life . "This is THE Game of Life SSG. It proves cellular automata can encode computation.")
