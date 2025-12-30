@@ -1,123 +1,133 @@
+#!/usr/bin/env -S deno run --allow-read
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // SPDX-FileCopyrightText: 2025 hyperpolymath
-// Language Policy Enforcement Script
+// hackenbush-ssg Language Policy Enforcement
 //
-// This script enforces the Hyperpolymath Language Policy:
-// - TypeScript is BANNED (use ReScript instead)
-// - Node.js/npm is BANNED (use Deno instead)
-// - Go is BANNED (use Rust instead)
-// - Python is BANNED except for SaltStack
+// ============================================================================
+// CORE LANGUAGE: Conway's Game of Life (.rle, .life, .cells patterns)
+// ============================================================================
+// ALL SSG logic MUST be encoded in Life patterns. The host runtime and
+// tooling may use ReScript, but the actual site generation logic must
+// be in the Life pattern files in src/ or patterns/.
+//
+// Standard Hyperpolymath bans also apply:
+// - TypeScript BANNED (use ReScript)
+// - Node.js/npm BANNED (use Deno)
+// - Go BANNED (use Rust)
+// - Python BANNED except SaltStack
 
-const BANNED_EXTENSIONS = [
-  ".ts",   // TypeScript - use ReScript
-  ".tsx",  // TypeScript JSX - use ReScript
-  ".go",   // Go - use Rust
-];
+const CORE_LANGUAGE = "Conway's Game of Life";
+const CORE_EXTENSIONS = [".rle", ".life", ".cells"];
+const CORE_DIRECTORIES = ["src/", "patterns/"];
 
-const BANNED_FILES = [
-  "package-lock.json",  // npm - use Deno
-  "yarn.lock",          // yarn - use Deno
-  "pnpm-lock.yaml",     // pnpm - use Deno
-  "bun.lockb",          // bun - use Deno
-];
+const BANNED_EXTENSIONS = [".ts", ".tsx", ".go"];
+const BANNED_FILES = new Set([
+  "package-lock.json", "yarn.lock", "pnpm-lock.yaml", "bun.lockb",
+]);
 
-const ALLOWED_PYTHON_PATHS = [
-  "salt/",
-  "saltstack/",
-  "_salt/",
-];
+const ALLOWED_PYTHON_PATHS = ["salt/", "saltstack/", "_salt/"];
+const RESCRIPT_ALLOWED_PATHS = ["life-lang/", "runtime/", "adapters/", "tests/"];
 
 async function* walkDir(dir) {
   for await (const entry of Deno.readDir(dir)) {
     const path = `${dir}/${entry.name}`;
-
-    // Skip hidden dirs and common non-source dirs
     if (entry.name.startsWith(".") ||
-        entry.name === "node_modules" ||
-        entry.name === "_site" ||
-        entry.name === "target" ||
-        entry.name === "_build") {
+        ["node_modules", "_site", "target", "_build"].includes(entry.name)) {
       continue;
     }
-
-    if (entry.isDirectory) {
-      yield* walkDir(path);
-    } else {
-      yield path;
-    }
+    if (entry.isDirectory) yield* walkDir(path);
+    else yield path;
   }
 }
 
 async function checkPolicy() {
   const violations = [];
   const cwd = Deno.cwd();
+  let coreFilesFound = false;
 
-  console.log("[POLICY] Checking language policy compliance...");
-  console.log("[POLICY] Working directory:", cwd);
+  console.log("=".repeat(60));
+  console.log(`HACKENBUSH-SSG LANGUAGE POLICY CHECK`);
+  console.log(`Core Language: ${CORE_LANGUAGE}`);
+  console.log("=".repeat(60) + "\n");
 
   for await (const file of walkDir(cwd)) {
     const relPath = file.replace(cwd + "/", "");
+    const filename = file.split("/").pop();
+
+    // Check for core language files
+    for (const ext of CORE_EXTENSIONS) {
+      if (filename.endsWith(ext)) {
+        for (const dir of CORE_DIRECTORIES) {
+          if (relPath.startsWith(dir)) coreFilesFound = true;
+        }
+      }
+    }
 
     // Check banned extensions
     for (const ext of BANNED_EXTENSIONS) {
-      if (file.endsWith(ext)) {
-        // Special case: .d.ts files are allowed for type declarations
-        if (file.endsWith(".d.ts")) {
-          continue;
-        }
-
-        const replacement = ext === ".ts" || ext === ".tsx"
-          ? "ReScript (.res)"
-          : ext === ".go"
-            ? "Rust (.rs)"
-            : "approved language";
-
+      if (file.endsWith(ext) && !file.endsWith(".d.ts")) {
         violations.push({
           file: relPath,
-          reason: `Banned extension ${ext} - use ${replacement} instead`,
+          reason: `Banned extension ${ext}`,
+          fix: ext === ".go" ? "Use Rust instead" : "Use ReScript instead",
         });
       }
     }
 
     // Check banned files
-    for (const banned of BANNED_FILES) {
-      if (file.endsWith(banned)) {
+    if (BANNED_FILES.has(filename)) {
+      violations.push({
+        file: relPath,
+        reason: "Node.js/npm artifact (banned)",
+        fix: "Remove and use Deno (deno.json) instead",
+      });
+    }
+
+    // Check Python
+    if (filename.endsWith(".py")) {
+      if (!ALLOWED_PYTHON_PATHS.some(p => relPath.startsWith(p))) {
         violations.push({
           file: relPath,
-          reason: `Banned file ${banned} - use Deno (deno.json) instead`,
+          reason: "Python outside SaltStack (banned)",
+          fix: "Use ReScript or Rust instead",
         });
       }
     }
 
-    // Check Python files
-    if (file.endsWith(".py")) {
-      const isAllowed = ALLOWED_PYTHON_PATHS.some(p => relPath.startsWith(p));
-      if (!isAllowed) {
+    // Check ReScript is only in allowed paths
+    if (filename.endsWith(".res")) {
+      if (!RESCRIPT_ALLOWED_PATHS.some(p => relPath.startsWith(p))) {
         violations.push({
           file: relPath,
-          reason: "Python is only allowed for SaltStack - use ReScript or Rust instead",
+          reason: "ReScript outside tooling directories",
+          fix: `Core SSG logic must be in ${CORE_LANGUAGE}. Move to life-lang/, runtime/, or adapters/`,
         });
       }
     }
   }
 
-  if (violations.length > 0) {
-    console.log("\n[POLICY] VIOLATIONS FOUND:");
-    console.log("=".repeat(60));
-
-    for (const v of violations) {
-      console.log(`\n  File: ${v.file}`);
-      console.log(`  Reason: ${v.reason}`);
-    }
-
-    console.log("\n" + "=".repeat(60));
-    console.log(`[POLICY] Total violations: ${violations.length}`);
-    console.log("[POLICY] See CLAUDE.md for the Language Policy");
-
-    Deno.exit(1);
+  // CRITICAL: Core language files MUST exist
+  if (!coreFilesFound) {
+    violations.push({
+      file: "src/ or patterns/",
+      reason: `CRITICAL: No ${CORE_LANGUAGE} files found`,
+      fix: `Add .rle, .life, or .cells pattern files to src/ or patterns/`,
+    });
   }
 
-  console.log("[POLICY] All checks passed - no violations found");
+  if (violations.length === 0) {
+    console.log(`✓ Core language (${CORE_LANGUAGE}) files present`);
+    console.log("✓ All policy checks passed!");
+    Deno.exit(0);
+  }
+
+  console.log(`✗ ${violations.length} violation(s) found:\n`);
+  for (const v of violations) {
+    console.log(`  File: ${v.file}`);
+    console.log(`  Issue: ${v.reason}`);
+    console.log(`  Fix: ${v.fix}\n`);
+  }
+  Deno.exit(1);
 }
 
 await checkPolicy();
