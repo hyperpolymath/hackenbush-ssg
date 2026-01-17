@@ -1,6 +1,6 @@
 {
   "name": "hackenbush-ssg",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "exports": "./runtime/Host.res.js",
   "tasks": {
     "build": "cd runtime && npx rescript && cd ../tests && npx rescript",
